@@ -62,10 +62,11 @@ export default function BlogPostForm({ initialValues }: { initialValues?: PostFo
 
       if (!insertInContent) {
         update("coverImage", data.url);
-        return;
+        return data.url;
       }
 
       update("content", `${values.content}<p><img src="${data.url}" alt="${values.title || "Blog image"}" /></p>`);
+      return data.url;
     } finally {
       setUploading(false);
     }
@@ -83,21 +84,36 @@ export default function BlogPostForm({ initialValues }: { initialValues?: PostFo
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    setSaving(true);
-    setError("");
-    const response = await fetch(isEditing ? `/api/blog/${initialValues!.id}` : "/api/blog", {
-      method: isEditing ? "PUT" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-    setSaving(false);
-    if (!response.ok) {
-      const data = await response.json();
-      setError(data.error || "Failed to save post");
+    const plainContent = values.content.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").trim();
+    if (!plainContent) {
+      setError("Description is required.");
       return;
     }
-    router.push("/admin/blog");
-    router.refresh();
+    if (!values.coverImage) {
+      setError("Featured photo is required.");
+      return;
+    }
+
+    setSaving(true);
+    setError("");
+    try {
+      const response = await fetch(isEditing ? `/api/blog/${initialValues!.id}` : "/api/blog", {
+        method: isEditing ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || "Failed to save post");
+        return;
+      }
+      router.push("/admin/blog");
+      router.refresh();
+    } catch {
+      setError("Could not connect to the server. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   const fieldClass = "mt-1.5 w-full border border-[#D8D3C8] px-3 py-2 text-sm outline-none focus:border-[#1F3A5F]";
@@ -131,11 +147,23 @@ export default function BlogPostForm({ initialValues }: { initialValues?: PostFo
           <SummernoteEditor
             value={values.content}
             onChange={(content) => update("content", content)}
+            onError={setError}
             onImageUpload={async (file) => {
-              const response = await fetch("/api/upload?kind=blog", { method: "POST", body: (() => { const formData = new FormData(); formData.append("file", file); return formData; })() });
-              const data = await response.json();
-              if (!response.ok) throw new Error(data.error || "Image upload failed");
-              return data.url;
+              if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type)) {
+                throw new Error("Only JPG, JPEG, PNG, WEBP, or GIF images are allowed.");
+              }
+              if (file.size > 2 * 1024 * 1024) throw new Error("Images must be 2MB or smaller.");
+              setUploading(true);
+              try {
+                const formData = new FormData();
+                formData.append("file", file);
+                const response = await fetch("/api/upload?kind=blog", { method: "POST", body: formData });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || "Image upload failed");
+                return data.url;
+              } finally {
+                setUploading(false);
+              }
             }}
           />
         </div>

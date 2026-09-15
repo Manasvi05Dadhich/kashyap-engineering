@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import DeleteBlogButton from "./delete-button";
 
 export default async function AdminBlogPage() {
   const posts = await prisma.blogPost.findMany({ orderBy: { createdAt: "desc" } });
@@ -39,6 +40,8 @@ export default async function AdminBlogPage() {
                   >
                     Edit
                   </Link>
+                  <span className="mx-2 text-[#D8D3C8]">|</span>
+                  <DeleteBlogButton id={post.id} title={post.title} />
                 </td>
               </tr>
             ))}
