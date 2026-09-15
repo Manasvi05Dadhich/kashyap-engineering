@@ -8,6 +8,10 @@ type SummernoteEditorProps = {
   onImageUpload: (file: File) => Promise<string>;
 };
 
+type SummernoteJQuery = {
+  summernote: (...args: unknown[]) => unknown;
+};
+
 export default function SummernoteEditor({ value, onChange, onImageUpload }: SummernoteEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const initialValueRef = useRef(value);
@@ -21,18 +25,20 @@ export default function SummernoteEditor({ value, onChange, onImageUpload }: Sum
 
   useEffect(() => {
     let destroyed = false;
-    let editor: JQuery<HTMLTextAreaElement> | undefined;
+    let editor: SummernoteJQuery | undefined;
 
     async function initialize() {
       const jqueryModule = await import("jquery");
       const $ = jqueryModule.default;
       (window as typeof window & { $?: typeof $; jQuery?: typeof $ }).$ = $;
       (window as typeof window & { $?: typeof $; jQuery?: typeof $ }).jQuery = $;
+      // Summernote ships this browser-only bundle without a usable subpath declaration.
+      // @ts-expect-error The module is loaded dynamically in the browser.
       await import("summernote/dist/summernote-lite.js");
 
       if (destroyed || !textareaRef.current) return;
 
-      editor = $(textareaRef.current);
+      editor = $(textareaRef.current) as unknown as SummernoteJQuery;
       editor.summernote({
         height: 300,
         placeholder: "Write your blog content here...",
