@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@import "summernote/dist/summernote-lite.css";
+
+@theme inline {
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+.summernote-wrapper .note-editor {
+  border: 0;
+}
+
+.summernote-wrapper .note-toolbar {
+  background: #f7f5f1;
+  border-bottom: 1px solid #d8d3c8;
+}
+
+.summernote-wrapper .note-editable {
+  min-height: 300px;
+  font-family: var(--font-body), sans-serif;
+  color: #1c2024;
+}
