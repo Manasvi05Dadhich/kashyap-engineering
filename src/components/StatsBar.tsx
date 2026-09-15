@@ -8,7 +8,13 @@ const FALLBACK_STATS = [
 ];
 
 export default async function StatsBar() {
-  const stats = await prisma.companyStat.findMany({ orderBy: { order: "asc" } });
+  let stats = FALLBACK_STATS;
+  try {
+    const databaseStats = await prisma.companyStat.findMany({ orderBy: { order: "asc" } });
+    stats = databaseStats.length > 0 ? databaseStats : FALLBACK_STATS;
+  } catch {
+    // Use the verified static values while a local database tunnel is offline.
+  }
   const items = stats.length > 0 ? stats : FALLBACK_STATS;
 
   return (

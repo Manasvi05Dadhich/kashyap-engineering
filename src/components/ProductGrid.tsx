@@ -3,12 +3,17 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 
 export default async function ProductGrid() {
-  const products = await prisma.product.findMany({
-    where: { featured: true },
-    include: { images: { take: 1, orderBy: { order: "asc" } } },
-    orderBy: { order: "asc" },
-    take: 6,
-  });
+  let products = [];
+  try {
+    products = await prisma.product.findMany({
+      where: { featured: true },
+      include: { images: { take: 1, orderBy: { order: "asc" } } },
+      orderBy: { order: "asc" },
+      take: 6,
+    });
+  } catch {
+    // Show the empty state while a local database tunnel is offline.
+  }
 
   if (products.length === 0) {
     return (
