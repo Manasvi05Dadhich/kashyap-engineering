@@ -3,12 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function CategoryForm({ parentCategories = [], requireParent = false }: { parentCategories?: { id: string; name: string }[]; requireParent?: boolean }) {
+export default function CategoryForm() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
-  const [parentId, setParentId] = useState(parentCategories[0]?.id ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -31,7 +30,7 @@ export default function CategoryForm({ parentCategories = [], requireParent = fa
     const res = await fetch("/api/categories", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, slug, description, parentId: parentId || null }),
+      body: JSON.stringify({ name, slug, description }),
     });
 
     setSaving(false);
@@ -45,21 +44,11 @@ export default function CategoryForm({ parentCategories = [], requireParent = fa
     setName("");
     setSlug("");
     setDescription("");
-    setParentId(parentCategories[0]?.id ?? "");
     router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="max-w-md border border-[#D8D3C8] bg-white p-6">
-      {requireParent && (
-        <div className="mb-4">
-          <label className="mb-1.5 block text-sm font-medium text-[#1C2024]">Top Level Category</label>
-          <select required value={parentId} onChange={(e) => setParentId(e.target.value)} className="w-full border border-[#D8D3C8] bg-white px-3 py-2 text-sm outline-none focus:border-[#1F3A5F]">
-            <option value="">Select a top level category</option>
-            {parentCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-          </select>
-        </div>
-      )}
       <div className="mb-4">
         <label className="mb-1.5 block text-sm font-medium text-[#1C2024]">Name</label>
         <input

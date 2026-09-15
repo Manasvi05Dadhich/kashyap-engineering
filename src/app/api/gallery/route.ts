@@ -8,15 +8,12 @@ export async function POST(request: NextRequest) {
   if (!productId || !url) {
     return NextResponse.json({ error: "Product and image URL are required" }, { status: 400 });
   }
-
-  const product = await prisma.product.findUnique({ where: { id: productId } });
+ const product = await prisma.product.findUnique({ where: { id: productId } });
   if (!product) return NextResponse.json({ error: "Product not found" }, { status: 404 });
-
   const lastImage = await prisma.productImage.findFirst({
     where: { productId },
     orderBy: { order: "desc" },
   });
-
   const image = await prisma.productImage.create({
     data: {
       productId,
@@ -26,6 +23,5 @@ export async function POST(request: NextRequest) {
     },
     include: { product: true },
   });
-
   return NextResponse.json(image, { status: 201 });
 }

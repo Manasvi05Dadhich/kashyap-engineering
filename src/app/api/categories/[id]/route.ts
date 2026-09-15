@@ -7,11 +7,11 @@ export async function PUT(
 ) {
   const { id } = await params;
   const body = await request.json();
-  const { name, slug, description, image, order, parentId } = body;
+  const { name, slug, description, image, order } = body;
 
   const category = await prisma.category.update({
     where: { id },
-    data: { name, slug, description, image, order, parentId: parentId || null },
+    data: { name, slug, description, image, order },
   });
 
   return NextResponse.json(category);

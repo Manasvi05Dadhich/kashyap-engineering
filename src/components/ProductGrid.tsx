@@ -1,9 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
+type FeaturedProduct = Prisma.ProductGetPayload<{
+  include: { images: { take: 1; orderBy: { order: "asc" } } };
+}>;
+
 export default async function ProductGrid() {
-  let products = [];
+  let products: FeaturedProduct[] = [];
   try {
     products = await prisma.product.findMany({
       where: { featured: true },
@@ -20,8 +25,7 @@ export default async function ProductGrid() {
       <section className="mx-auto max-w-6xl px-6 py-16">
         <h2 className="font-display text-2xl font-bold text-[#1C2024]">Our products</h2>
         <p className="mt-3 text-sm text-[#5B6472]">
-          No products added yet — add some from the admin panel and they&apos;ll
-          appear here automatically.
+          No products added yet 
         </p>
       </section>
     );

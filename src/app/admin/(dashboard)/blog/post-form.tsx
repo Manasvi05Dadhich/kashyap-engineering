@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import SummernoteEditor from "./summernote-editor";
 
 type PostFormValues = {
   id?: string;
@@ -33,6 +32,8 @@ export default function BlogPostForm({ initialValues }: { initialValues?: PostFo
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+
   function update<K extends keyof PostFormValues>(key: K, value: PostFormValues[K]) {
     setValues((previous) => ({ ...previous, [key]: value }));
   }
@@ -62,11 +63,12 @@ export default function BlogPostForm({ initialValues }: { initialValues?: PostFo
 
       if (!insertInContent) {
         update("coverImage", data.url);
-        return data.url;
+        return;
       }
 
-      update("content", `${values.content}<p><img src="${data.url}" alt="${values.title || "Blog image"}" /></p>`);
-      return data.url;
+      const caret = contentRef.current?.selectionStart ?? values.content.length;
+      const markup = `\n![${values.title || "Blog image"}](${data.url})\n`;
+      update("content", `${values.content.slice(0, caret)}${markup}${values.content.slice(caret)}`);
     } finally {
       setUploading(false);
     }
@@ -82,38 +84,30 @@ export default function BlogPostForm({ initialValues }: { initialValues?: PostFo
     }
   }
 
+  async function handlePaste(event: React.ClipboardEvent<HTMLTextAreaElement>) {
+    const file = Array.from(event.clipboardData.files).find((item) => item.type.startsWith("image/"));
+    if (!file) return;
+    event.preventDefault();
+    await handleFile(file, true);
+  }
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    const plainContent = values.content.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").trim();
-    if (!plainContent) {
-      setError("Description is required.");
-      return;
-    }
-    if (!values.coverImage) {
-      setError("Featured photo is required.");
-      return;
-    }
-
     setSaving(true);
     setError("");
-    try {
-      const response = await fetch(isEditing ? `/api/blog/${initialValues!.id}` : "/api/blog", {
-        method: isEditing ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        setError(data.error || "Failed to save post");
-        return;
-      }
-      router.push("/admin/blog");
-      router.refresh();
-    } catch {
-      setError("Could not connect to the server. Please try again.");
-    } finally {
-      setSaving(false);
+    const response = await fetch(isEditing ? `/api/blog/${initialValues!.id}` : "/api/blog", {
+      method: isEditing ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+    setSaving(false);
+    if (!response.ok) {
+      const data = await response.json();
+      setError(data.error || "Failed to save post");
+      return;
     }
+    router.push("/admin/blog");
+    router.refresh();
   }
 
   const fieldClass = "mt-1.5 w-full border border-[#D8D3C8] px-3 py-2 text-sm outline-none focus:border-[#1F3A5F]";
@@ -143,30 +137,7 @@ export default function BlogPostForm({ initialValues }: { initialValues?: PostFo
 
       <label className="block text-sm font-medium text-[#1C2024]">
         Description <span className="text-red-600">*</span>
-        <div className="summernote-wrapper mt-1.5 overflow-hidden border border-[#D8D3C8] bg-white text-sm">
-          <SummernoteEditor
-            value={values.content}
-            onChange={(content) => update("content", content)}
-            onError={setError}
-            onImageUpload={async (file) => {
-              if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type)) {
-                throw new Error("Only JPG, JPEG, PNG, WEBP, or GIF images are allowed.");
-              }
-              if (file.size > 2 * 1024 * 1024) throw new Error("Images must be 2MB or smaller.");
-              setUploading(true);
-              try {
-                const formData = new FormData();
-                formData.append("file", file);
-                const response = await fetch("/api/upload?kind=blog", { method: "POST", body: formData });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error || "Image upload failed");
-                return data.url;
-              } finally {
-                setUploading(false);
-              }
-            }}
-          />
-        </div>
+        <textarea ref={contentRef} required rows={12} value={values.content} onPaste={handlePaste} onChange={(event) => update("content", event.target.value)} placeholder="Write your blog content here..." className={`${fieldClass} leading-6`} />
       </label>
 
       <div className="border-l-2 border-[#1F3A5F] bg-[#F7F5F1] px-4 py-3 text-xs leading-5 text-[#5B6472]">
