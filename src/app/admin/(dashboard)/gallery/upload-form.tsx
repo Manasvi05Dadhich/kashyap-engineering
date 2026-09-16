@@ -11,7 +11,8 @@ export default function GalleryUploadForm() {
 
   async function handleUpload(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const input = event.currentTarget.elements.namedItem("image") as HTMLInputElement;
+    const form = event.currentTarget;
+    const input = form.elements.namedItem("image") as HTMLInputElement;
     const file = input.files?.[0];
     const altInput = event.currentTarget.elements.namedItem("alt") as HTMLInputElement;
     if (!file) {
@@ -32,7 +33,7 @@ export default function GalleryUploadForm() {
       const galleryData = await galleryResponse.json();
       if (!galleryResponse.ok) throw new Error(galleryData.error || "Could not add image to gallery");
 
-      event.currentTarget.reset();
+      form.reset();
       router.refresh();
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "Image upload failed");
