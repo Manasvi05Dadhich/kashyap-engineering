@@ -3,25 +3,20 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { productId, url, alt } = body;
+  const { url, alt } = body;
 
-  if (!productId || !url) {
-    return NextResponse.json({ error: "Product and image URL are required" }, { status: 400 });
+  if (!url) {
+    return NextResponse.json({ error: "Image URL is required" }, { status: 400 });
   }
- const product = await prisma.product.findUnique({ where: { id: productId } });
-  if (!product) return NextResponse.json({ error: "Product not found" }, { status: 404 });
-  const lastImage = await prisma.productImage.findFirst({
-    where: { productId },
+  const lastImage = await prisma.galleryImage.findFirst({
     orderBy: { order: "desc" },
   });
-  const image = await prisma.productImage.create({
+  const image = await prisma.galleryImage.create({
     data: {
-      productId,
       url,
-      alt: alt || product.name,
+      alt: alt || null,
       order: (lastImage?.order ?? -1) + 1,
     },
-    include: { product: true },
   });
   return NextResponse.json(image, { status: 201 });
 }
