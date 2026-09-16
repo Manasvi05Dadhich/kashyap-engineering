@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { uploadImage as uploadImageFile } from "@/lib/client-upload";
 
 type PostFormValues = {
   id?: string;
@@ -55,19 +56,15 @@ export default function BlogPostForm({ initialValues }: { initialValues?: PostFo
 
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const response = await fetch("/api/upload?kind=blog", { method: "POST", body: formData });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Image upload failed");
+      const imageUrl = await uploadImageFile(file, "blog");
 
       if (!insertInContent) {
-        update("coverImage", data.url);
+        update("coverImage", imageUrl);
         return;
       }
 
       const caret = contentRef.current?.selectionStart ?? values.content.length;
-      const markup = `\n![${values.title || "Blog image"}](${data.url})\n`;
+      const markup = `\n![${values.title || "Blog image"}](${imageUrl})\n`;
       update("content", `${values.content.slice(0, caret)}${markup}${values.content.slice(caret)}`);
     } finally {
       setUploading(false);

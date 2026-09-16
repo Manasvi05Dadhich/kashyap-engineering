@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { uploadImage } from "@/lib/client-upload";
 
 type Product = { id: string; name: string };
 
@@ -23,16 +24,12 @@ export default function GalleryUploadForm({ products }: { products: Product[] })
     setUploading(true);
     setError("");
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const uploadResponse = await fetch("/api/upload", { method: "POST", body: formData });
-      const uploadData = await uploadResponse.json();
-      if (!uploadResponse.ok) throw new Error(uploadData.error || "Image upload failed");
+      const imageUrl = await uploadImage(file, "products");
 
       const galleryResponse = await fetch("/api/gallery", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, url: uploadData.url }),
+        body: JSON.stringify({ productId, url: imageUrl }),
       });
       const galleryData = await galleryResponse.json();
       if (!galleryResponse.ok) throw new Error(galleryData.error || "Could not add image to gallery");

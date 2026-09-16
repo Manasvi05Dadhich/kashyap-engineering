@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { uploadImage } from "@/lib/client-upload";
 
 type Category = { id: string; name: string };
 type ImageItem = { url: string; alt?: string };
@@ -73,12 +74,7 @@ export default function ProductForm({
     try {
       const uploaded: ImageItem[] = [];
       for (const file of Array.from(files)) {
-        const formData = new FormData();
-        formData.append("file", file);
-        const res = await fetch("/api/upload", { method: "POST", body: formData });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Upload failed");
-        uploaded.push({ url: data.url, alt: values.name });
+        uploaded.push({ url: await uploadImage(file, "products"), alt: values.name });
       }
       setValues((prev) => ({ ...prev, images: [...prev.images, ...uploaded] }));
     } catch (err) {
