@@ -4,6 +4,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = { title: "Products | Kashyap Engineering", description: "Explore Kashyap Engineering filling and packaging machinery." };
 
 export default async function ProductsPage() {

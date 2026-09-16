@@ -1,6 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+
+type HeroProduct = Prisma.ProductGetPayload<{
+  include: { images: { take: 4; orderBy: { order: "asc" } } };
+}>;
 
 function MachineSketch({ className = "" }: { className?: string }) {
   return (
@@ -30,7 +35,7 @@ function DetailCard({ className, label, variant, imageUrl, imageAlt }: { classNa
 }
 
 export default async function Hero() {
-  let products = [];
+  let products: HeroProduct[] = [];
   try {
     products = await prisma.product.findMany({
       where: { featured: true },

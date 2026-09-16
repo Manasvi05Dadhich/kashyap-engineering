@@ -1,6 +1,8 @@
 import Link from "next/link";
 import LogoutButton from "./logout-button";
 
+export const dynamic = "force-dynamic";
+
 const navigation = [
   { label: "Dashboard", href: "/admin", icon: "▦" },
   { label: "Website Settings", href: "/admin/coming-soon?section=Website%20Settings", icon: "☷" },

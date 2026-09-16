@@ -5,6 +5,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const category = await prisma.category.findUnique({ where: { slug }, include: { products: { include: { images: { take: 1, orderBy: { order: "asc" } } }, orderBy: { order: "asc" } } } });

@@ -8,7 +8,6 @@ export default async function CategoryChips() {
   });
 
   if (categories.length === 0) return null;
-
   return (
     <section className="border-b border-[#D8D3C8] bg-[#F7F5F1]">
       <div className="mx-auto max-w-6xl px-6 py-8">
