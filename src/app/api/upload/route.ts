@@ -33,6 +33,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response);
   }
 
+  if (process.env.VERCEL && !process.env.BLOB_READ_WRITE_TOKEN) {
+    return NextResponse.json(
+      { error: "Image uploads are not configured. Connect a Vercel Blob store and redeploy." },
+      { status: 503 }
+    );
+  }
+
   const uploadDir = path.join(process.cwd(), "public", "uploads", kind);
   const formData = await request.formData();
   const file = formData.get("file") as File | null;
