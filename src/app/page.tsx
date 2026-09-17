@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import StatsBar from "@/components/StatsBar";
+import TrustMarquee from "@/components/TrustMarquee";
 import CategoryChips from "@/components/CategoryChips";
 import ProductGrid from "@/components/ProductGrid";
 import ContactSection from "@/components/ContactSection";
@@ -14,7 +14,7 @@ export default function HomePage() {
       <Navbar />
       <main className="flex-1">
         <Hero />
-        <StatsBar />
+        <TrustMarquee />
         <CategoryChips />
         <ProductGrid />
         <ContactSection />

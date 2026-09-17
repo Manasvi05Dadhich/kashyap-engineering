@@ -37,6 +37,19 @@
   }
 }
 
+@keyframes trust-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 0.5rem)); }
+}
+
+.trust-marquee {
+  animation: trust-marquee 30s linear infinite;
+}
+
+.trust-marquee:hover {
+  animation-play-state: paused;
+}
+
 .public-motion {
   min-height: 100%;
   animation: page-enter 550ms cubic-bezier(.22, 1, .36, 1) both;
@@ -60,6 +73,8 @@
   .public-motion main > div {
     animation: none;
   }
+
+  .trust-marquee { animation: none; }
 }
 
 .reveal-up {
