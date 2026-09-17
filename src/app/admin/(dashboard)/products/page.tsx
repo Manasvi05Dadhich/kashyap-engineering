@@ -1,12 +1,22 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import Link from "next/link";
 import DeleteProductButton from "./delete-button";
 
+type AdminProduct = Prisma.ProductGetPayload<{
+  include: { category: true; images: { take: 1 } };
+}>;
+
 export default async function AdminProductsPage() {
-  const products = await prisma.product.findMany({
-    include: { category: true, images: { take: 1 } },
-    orderBy: { order: "asc" },
-  });
+  let products: AdminProduct[] = [];
+  try {
+    products = await prisma.product.findMany({
+      include: { category: true, images: { take: 1 } },
+      orderBy: { order: "asc" },
+    });
+  } catch {
+    // Keep the management page available while the database tunnel is offline.
+  }
 
   return (
     <div>

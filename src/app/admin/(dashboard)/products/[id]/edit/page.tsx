@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import ProductForm from "../../product-form";
 import { notFound } from "next/navigation";
+
+type AdminProduct = Prisma.ProductGetPayload<{
+  include: { images: { orderBy: { order: "asc" } } };
+}>;
 
 export default async function EditProductPage({
   params,
@@ -9,13 +14,19 @@ export default async function EditProductPage({
 }) {
   const { id } = await params;
 
-  const [product, categories] = await Promise.all([
-    prisma.product.findUnique({
-      where: { id },
-      include: { images: { orderBy: { order: "asc" } } },
-    }),
-    prisma.category.findMany({ orderBy: { order: "asc" } }),
-  ]);
+  let product: AdminProduct | null = null;
+  let categories: Awaited<ReturnType<typeof prisma.category.findMany>> = [];
+  try {
+    [product, categories] = await Promise.all([
+      prisma.product.findUnique({
+        where: { id },
+        include: { images: { orderBy: { order: "asc" } } },
+      }),
+      prisma.category.findMany({ orderBy: { order: "asc" } }),
+    ]);
+  } catch {
+    // Treat an unavailable database like a missing product instead of throwing.
+  }
 
   if (!product) notFound();
 

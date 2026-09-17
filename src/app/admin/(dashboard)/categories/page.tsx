@@ -1,14 +1,24 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import CategoryForm from "./category-form";
 import DeleteCategoryButton from "./delete-button";
 
 export const dynamic = "force-dynamic";
 
+type AdminCategory = Prisma.CategoryGetPayload<{
+  include: { _count: { select: { products: true } } };
+}>;
+
 export default async function AdminCategoriesPage() {
-  const categories = await prisma.category.findMany({
-    orderBy: { order: "asc" },
-    include: { _count: { select: { products: true } } },
-  });
+  let categories: AdminCategory[] = [];
+  try {
+    categories = await prisma.category.findMany({
+      orderBy: { order: "asc" },
+      include: { _count: { select: { products: true } } },
+    });
+  } catch {
+    // Keep the management page available while the database tunnel is offline.
+  }
 
   return (
     <div>

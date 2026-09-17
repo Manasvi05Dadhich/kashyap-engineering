@@ -3,7 +3,12 @@ import Link from "next/link";
 import DeleteBlogButton from "./delete-button";
 
 export default async function AdminBlogPage() {
-  const posts = await prisma.blogPost.findMany({ orderBy: { createdAt: "desc" } });
+  let posts: Awaited<ReturnType<typeof prisma.blogPost.findMany>> = [];
+  try {
+    posts = await prisma.blogPost.findMany({ orderBy: { createdAt: "desc" } });
+  } catch {
+    // Keep the management page available while the database tunnel is offline.
+  }
 
   return (
     <div>

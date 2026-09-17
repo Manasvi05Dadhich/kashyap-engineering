@@ -2,7 +2,12 @@ import { prisma } from "@/lib/prisma";
 import ProductForm from "../product-form";
 
 export default async function NewProductPage() {
-  const categories = await prisma.category.findMany({ orderBy: { order: "asc" } });
+  let categories: Awaited<ReturnType<typeof prisma.category.findMany>> = [];
+  try {
+    categories = await prisma.category.findMany({ orderBy: { order: "asc" } });
+  } catch {
+    // Show the setup message while the database tunnel is offline.
+  }
 
   return (
     <div>

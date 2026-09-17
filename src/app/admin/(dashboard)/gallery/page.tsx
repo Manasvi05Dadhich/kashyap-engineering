@@ -3,7 +3,12 @@ import { prisma } from "@/lib/prisma";
 import GalleryUploadForm from "./upload-form";
 
 export default async function AdminGalleryPage() {
-  const images = await prisma.galleryImage.findMany({ orderBy: { createdAt: "desc" } });
+  let images: Awaited<ReturnType<typeof prisma.galleryImage.findMany>> = [];
+  try {
+    images = await prisma.galleryImage.findMany({ orderBy: { createdAt: "desc" } });
+  } catch {
+    // Keep the management page available while the database tunnel is offline.
+  }
 
   return (
     <div>

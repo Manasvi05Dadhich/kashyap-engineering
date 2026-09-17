@@ -92,19 +92,32 @@ export default function BlogPostForm({ initialValues }: { initialValues?: PostFo
     event.preventDefault();
     setSaving(true);
     setError("");
-    const response = await fetch(isEditing ? `/api/blog/${initialValues!.id}` : "/api/blog", {
-      method: isEditing ? "PUT" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-    setSaving(false);
-    if (!response.ok) {
-      const data = await response.json();
-      setError(data.error || "Failed to save post");
-      return;
+    try {
+      const response = await fetch(isEditing ? `/api/blog/${initialValues!.id}` : "/api/blog", {
+        method: isEditing ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const responseText = await response.text();
+      let data: { error?: string } = {};
+      if (responseText) {
+        try {
+          data = JSON.parse(responseText) as { error?: string };
+        } catch {
+          data = { error: "The server returned an invalid response." };
+        }
+      }
+      if (!response.ok) {
+        setError(data.error || "Failed to save post. Please try again.");
+        return;
+      }
+      router.push("/admin/blog");
+      router.refresh();
+    } catch {
+      setError("Could not reach the server. Check the database connection and try again.");
+    } finally {
+      setSaving(false);
     }
-    router.push("/admin/blog");
-    router.refresh();
   }
 
   const fieldClass = "mt-1.5 w-full border border-[#D8D3C8] px-3 py-2 text-sm outline-none focus:border-[#1F3A5F]";

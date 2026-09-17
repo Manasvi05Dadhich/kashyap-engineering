@@ -8,7 +8,12 @@ export default async function EditBlogPostPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const post = await prisma.blogPost.findUnique({ where: { id } });
+  let post: Awaited<ReturnType<typeof prisma.blogPost.findUnique>> = null;
+  try {
+    post = await prisma.blogPost.findUnique({ where: { id } });
+  } catch {
+    // Treat an unavailable database like a missing post instead of throwing.
+  }
   if (!post) notFound();
 
   return (
