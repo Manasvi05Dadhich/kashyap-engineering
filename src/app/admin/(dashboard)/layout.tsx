@@ -30,22 +30,22 @@ const navigation = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#F7F5F1]">
+    <div className="min-h-screen bg-[#f5efe7]">
       <div className="flex">
-        <aside className="sticky top-0 h-screen w-64 shrink-0 overflow-y-auto border-r border-[#182637] bg-[#223246] text-white">
+        <aside className="sticky top-0 h-screen w-64 shrink-0 overflow-y-auto border-r border-[#6d2929] bg-[#4d1414] text-white">
           <div className="border-b border-white/10 px-5 py-5">
             <p className="text-sm font-semibold">Kashyap Engineering</p>
-            <p className="text-xs text-[#AAB8C6]">Admin panel</p>
+            <p className="text-xs text-[#e2bd72]/80">Admin panel</p>
           </div>
           <nav className="flex flex-col gap-0.5 p-3 text-xs">
             {navigation.map((item) => (
-              <Link key={item.label} href={item.href} className="flex items-center gap-3 rounded px-3 py-2.5 text-[#D7E0E8] transition hover:bg-white/10 hover:text-white">
-                <span className="w-4 text-center text-[#AFC4D5]" aria-hidden="true">{item.icon}</span>
+              <Link key={item.label} href={item.href} className="flex items-center gap-3 rounded px-3 py-2.5 text-[#f5efe7]/80 transition hover:bg-white/10 hover:text-white">
+                <span className="w-4 text-center text-[#e2bd72]" aria-hidden="true">{item.icon}</span>
                 {item.label}
               </Link>
             ))}
           </nav>
-          <div className="sticky bottom-0 border-t border-white/10 bg-[#223246] p-3">
+          <div className="sticky bottom-0 border-t border-white/10 bg-[#4d1414] p-3">
             <LogoutButton />
           </div>
         </aside>

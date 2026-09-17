@@ -20,3 +20,23 @@
   font-family: var(--font-body), sans-serif;
   color: #1c2024;
 }
+
+/* Keep older public templates on the same logo-inspired visual system. */
+[class*="text-[#1F3A5F]"],
+[class*="text-[#1268D4]"] {
+  color: #8b2d2d !important;
+}
+
+[class*="bg-[#1F3A5F]"],
+[class*="bg-[#1268D4]"] {
+  background-color: #4d1414 !important;
+}
+
+[class*="border-[#D8D3C8]"] {
+  border-color: #e3d8ca !important;
+}
+
+[class*="bg-[#F7F5F1]"],
+[class*="bg-[#E8EEF4]"] {
+  background-color: #f5efe7 !important;
+}

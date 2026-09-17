@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const { url, alt } = body;
-
   if (!url) {
     return NextResponse.json({ error: "Image URL is required" }, { status: 400 });
   }

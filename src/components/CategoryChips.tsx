@@ -1,23 +1,37 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
-export default async function CategoryChips() {
-  const categories = await prisma.category.findMany({
-    orderBy: { order: "asc" },
-    take: 10,
-  });
+const FALLBACK_CATEGORIES = [
+  { id: "liquid", name: "Liquid filling machines", slug: "liquid-filling-machines" },
+  { id: "oil", name: "Oil filling machines", slug: "oil-filling-machine-manufacturer-in-india" },
+  { id: "bottle", name: "Bottle filling machines", slug: "bottle-filling-machines" },
+  { id: "tube", name: "Tube filling machines", slug: "tube-filling-machines" },
+  { id: "packaging", name: "Packaging machines", slug: "packaging-machines" },
+];
 
-  if (categories.length === 0) return null;
+export default async function CategoryChips() {
+  let categories = FALLBACK_CATEGORIES;
+  try {
+    const databaseCategories = await prisma.category.findMany({
+      orderBy: { order: "asc" },
+      take: 10,
+    });
+    categories = databaseCategories.length > 0 ? databaseCategories : FALLBACK_CATEGORIES;
+  } catch {
+    // Keep the homepage available while a local database tunnel is offline.
+  }
+
   return (
-    <section className="border-b border-[#D8D3C8] bg-[#F7F5F1]">
-      <div className="mx-auto max-w-6xl px-6 py-8">
-        <p className="mb-4 text-sm font-medium text-[#5B6472]">Browse by category</p>
-        <div className="flex flex-wrap gap-2">
+    <section className="bg-white">
+      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
+        <p className="mb-3 text-xs font-bold uppercase tracking-[.2em] text-[#8b2d2d]">Our capabilities</p>
+        <h2 className="font-display text-3xl font-extrabold tracking-[-.03em] text-[#4d1414]">Solutions built around your line</h2>
+        <div className="mt-8 flex flex-wrap gap-3">
           {categories.map((c) => (
             <Link
               key={c.id}
               href={`/category/${c.slug}`}
-              className="border border-[#D8D3C8] bg-white px-4 py-2 text-sm text-[#1C2024] hover:border-[#1F3A5F] hover:text-[#1F3A5F]"
+              className="border border-[#e3d8ca] bg-[#f5efe7] px-5 py-3 text-sm font-semibold text-[#4d1414] transition hover:border-[#8b2d2d] hover:bg-[#8b2d2d] hover:text-white"
             >
               {c.name}
             </Link>

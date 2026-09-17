@@ -22,8 +22,9 @@ export default async function ProductGrid() {
 
   if (products.length === 0) {
     return (
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="font-display text-2xl font-bold text-[#1C2024]">Our products</h2>
+      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+        <p className="text-xs font-bold uppercase tracking-[.2em] text-[#8b2d2d]">What we offer</p>
+        <h2 className="mt-3 font-display text-3xl font-extrabold tracking-[-.03em] text-[#4d1414]">Explore our machinery</h2>
         <p className="mt-3 text-sm text-[#5B6472]">
           No products added yet 
         </p>
@@ -32,18 +33,17 @@ export default async function ProductGrid() {
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-6 py-16">
-      <h2 className="font-display text-2xl font-bold text-[#1C2024]">
-        Our most requested machines
-      </h2>
-      <div className="mt-8 grid grid-cols-1 gap-px bg-[#D8D3C8] sm:grid-cols-2 lg:grid-cols-3">
+    <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+      <p className="text-xs font-bold uppercase tracking-[.2em] text-[#8b2d2d]">What we offer</p>
+      <h2 className="mt-3 font-display text-3xl font-extrabold tracking-[-.03em] text-[#4d1414]">Explore our machinery</h2>
+      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
           <Link
             key={product.id}
             href={`/products/${product.slug}`}
-            className="group bg-[#F7F5F1] p-5 transition hover:bg-white"
+            className="group border border-[#e3d8ca] bg-white p-5 transition hover:-translate-y-1 hover:border-[#8b2d2d] hover:shadow-[0_16px_35px_rgba(77,20,20,.1)]"
           >
-            <div className="relative mb-4 aspect-square w-full overflow-hidden bg-white">
+            <div className="relative mb-5 aspect-[4/3] w-full overflow-hidden bg-[#f5efe7]">
               {product.images[0] ? (
                 <Image
                   src={product.images[0].url}
@@ -57,7 +57,7 @@ export default async function ProductGrid() {
                 </div>
               )}
             </div>
-            <h3 className="text-base font-semibold text-[#1C2024] group-hover:text-[#1F3A5F]">
+            <h3 className="font-display text-lg font-bold text-[#4d1414] group-hover:text-[#8b2d2d]">
               {product.name}
             </h3>
             {product.summary && (
