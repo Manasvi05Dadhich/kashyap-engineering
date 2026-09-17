@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Archivo, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import PublicMotion from "@/components/PublicMotion";
 
 const archivo = Archivo({
   variable: "--font-display",
@@ -28,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${archivo.variable} ${plexSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#F7F5F1] font-body text-[#1C2024]">
-        {children}
+        <PublicMotion>{children}</PublicMotion>
         <WhatsAppButton />
       </body>
     </html>
