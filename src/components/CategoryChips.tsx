@@ -26,7 +26,7 @@ export default async function CategoryChips() {
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
         <p className="mb-3 text-xs font-bold uppercase tracking-[.2em] text-[#8b2d2d]">Our capabilities</p>
         <h2 className="font-display text-3xl font-extrabold tracking-[-.03em] text-[#4d1414]">Solutions built around your line</h2>
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="stagger-grid mt-8 flex flex-wrap gap-3">
           {categories.map((c) => (
             <Link
               key={c.id}

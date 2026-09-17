@@ -1,8 +1,6 @@
 "use client";
-
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
 export default function DeleteCategoryButton({
   id,
   name,
@@ -14,14 +12,12 @@ export default function DeleteCategoryButton({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
   async function handleDelete() {
     if (productCount > 0) {
       alert(`Move or delete the ${productCount} product(s) in "${name}" first.`);
       return;
     }
     if (!confirm(`Delete category "${name}"?`)) return;
-
     setLoading(true);
     const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
     setLoading(false);
