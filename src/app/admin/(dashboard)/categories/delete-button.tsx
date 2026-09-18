@@ -4,7 +4,7 @@ import { useState } from "react";
 export default function DeleteCategoryButton({
   id,
   name,
-  productCount,
+  productCount, 
 }: {
   id: string;
   name: string;
